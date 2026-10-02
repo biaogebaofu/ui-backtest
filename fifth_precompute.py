@@ -312,6 +312,7 @@ def prepare_fifth_signals(data, tasks, output_dir, identity, max_workers,
                     task_dir.mkdir()
                     result = pool.apply_async(_compute_task, (str(input_dir), str(task_dir), tf, code))
                     running[task] = (result, task_dir)
+                    send(force=True)
                 for task, (result, task_dir) in list(running.items()):
                     if not result.ready():
                         continue

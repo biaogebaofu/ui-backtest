@@ -2808,6 +2808,11 @@ class App(tk.Tk):
             messagebox.showerror("打开目录失败", f"{path}\n{exc}")
 
     def poll_messages(self):
+        # Manual polls must replace the pending timer rather than start another chain.
+        task = getattr(self, "_poll_after_id", None)
+        if task:
+            self.after_cancel(task)
+        self._poll_after_id = None
         # Bound each callback so a flood of log/progress messages cannot starve
         # repaint, pause, stop and other user input.
         deadline = time.monotonic() + 0.025
