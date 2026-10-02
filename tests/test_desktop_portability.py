@@ -268,6 +268,34 @@ class DesktopUiTests(unittest.TestCase):
         for event in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
             self.assertTrue(panel.entry_tab.bind(event))
 
+    def test_entry_controls_fit_narrow_and_wide_windows_with_larger_font(self):
+        from tkinter import ttk
+        app, panel = self.app, self.app.selection_panel
+        widgets = [*panel.entry_mode_widgets.values(), *panel.position_filter_widgets.values()]
+        styles = {widget: widget.cget("style") for widget in widgets}
+        before = panel.get_config()
+        ttk.Style(app).configure("DesktopEntryTest.TCheckbutton", font=(app.ui_font_family, 13))
+        alpha = app.attributes("-alpha")
+        app.attributes("-alpha", 0)
+        try:
+            for widget in widgets:
+                widget.configure(style="DesktopEntryTest.TCheckbutton")
+            for width, height in ((900, 700), (1500, 850)):
+                app.geometry(f"{width}x{height}+30000+30000")
+                app.deiconify()
+                app.show_entry_rules()
+                app.update()
+                for widget in widgets:
+                    with self.subTest(width=width, text=widget.cget("text")):
+                        right = widget.winfo_rootx() + widget.winfo_width() - panel.entry_canvas.winfo_rootx()
+                        self.assertLessEqual(right, panel.entry_canvas.winfo_width())
+            self.assertEqual(panel.get_config(), before)
+        finally:
+            for widget, style in styles.items():
+                widget.configure(style=style)
+            app.attributes("-alpha", alpha)
+            app.withdraw()
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
