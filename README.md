@@ -12,7 +12,7 @@
 
 ## 环境与安装
 
-目标桌面系统为 Windows、macOS 和 Linux，使用 **Python 3.13**。Windows / Python 3.13.2 已完成本机验证；macOS / Linux 的 CI 尚待运行，也尚未完成实机验证。
+目标桌面系统为 Windows、macOS 和 Linux，使用 **Python 3.13**。Windows / Python 3.13.2 已完成本机验证；三平台自动测试状态见 [GitHub Actions](https://github.com/biaogebaofu/ui-backtest/actions)。macOS / Linux 尚未完成实机验证。
 
 需要带 Tkinter / Tcl/Tk 的 Python、可显示窗口的桌面会话，以及支持中文显示的字体。先用 `python -m tkinter` 检查是否能打开窗口。Tkinter 属于 Python 的可选标准库模块，缺少时请通过 Python 安装程序或所用发行版补装，参见 [Python 官方 Tkinter 文档](https://docs.python.org/3/library/tkinter.html)。
 

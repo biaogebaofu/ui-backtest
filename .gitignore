@@ -49,3 +49,5 @@ venv/
 Thumbs.db
 *.tmp
 *.bak
+
+.backtest.lock

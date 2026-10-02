@@ -12,7 +12,7 @@ The source is public for viewing with copyright reserved. **This is not an MIT-l
 
 ## Environment and installation
 
-The target desktop platforms are Windows, macOS, and Linux, using **Python 3.13**. Windows / Python 3.13.2 has been verified locally. macOS / Linux CI has yet to run, and neither platform has been tested on an actual machine.
+The target desktop platforms are Windows, macOS, and Linux, using **Python 3.13**. Windows / Python 3.13.2 has been verified locally. See [GitHub Actions](https://github.com/biaogebaofu/ui-backtest/actions) for the current status of automated tests on all three platforms. macOS / Linux have not been tested on actual machines.
 
 You need Python with Tkinter / Tcl/Tk, a graphical desktop session, and a font that displays Chinese. Check that `python -m tkinter` opens a window. Tkinter is an optional Python standard-library module; if missing, install it through your Python installer or distribution. See the [official Python Tkinter documentation](https://docs.python.org/3/library/tkinter.html).
 
