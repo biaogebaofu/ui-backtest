@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -13,6 +14,34 @@ from backtest_worker import 中文表头, 全量CSV表头
 
 
 class LegacyExportTests(unittest.TestCase):
+    def test_export_cache_without_temp_environment_stays_in_writable_temp_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "results"
+            output.mkdir()
+            with (output / "全部回测结果.csv").open("w", encoding="utf-8-sig", newline="") as handle:
+                csv.writer(handle).writerow(全量CSV表头)
+            system_temp = root / "system_temp"
+            system_temp.mkdir()
+            mkdir = Path.mkdir
+
+            def confined_mkdir(path, *args, **kwargs):
+                self.assertTrue(path.is_relative_to(root), f"缓存不得写到测试目录之外：{path}")
+                return mkdir(path, *args, **kwargs)
+
+            with mock.patch.dict(os.environ, {}, clear=True), \
+                 mock.patch.object(tempfile, "gettempdir", return_value=str(system_temp)) as tempdir, \
+                 mock.patch.object(Path, "mkdir", confined_mkdir), \
+                 mock.patch.object(sys, "argv", ["worst_export.py", "--output", str(output)]), \
+                 mock.patch.object(worst_export, "export_excel", side_effect=lambda _project, _payload, target: target), \
+                 mock.patch.object(worst_export, "emit"):
+                worst_export.main()
+                tempdir.assert_called_once()
+                runtime_temp = Path(os.environ["TEMP"])
+                self.assertEqual(os.environ["TMP"], str(runtime_temp))
+                self.assertTrue(runtime_temp.is_relative_to(system_temp))
+                self.assertTrue(runtime_temp.is_dir())
+
     def test_existing_csv_builds_both_rankings_with_complete_rows(self):
         with tempfile.TemporaryDirectory() as temp:
             output = Path(temp)

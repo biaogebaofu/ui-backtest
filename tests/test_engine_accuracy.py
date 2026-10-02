@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -358,7 +359,7 @@ class EngineAccuracyTests(unittest.TestCase):
         available, detail = gpu_status()
         if not available:
             self.skipTest(detail)
-        gpu_temp = Path(ROOT.anchor) / "alpha_arena_gpu_test_cache"
+        gpu_temp = Path(tempfile.gettempdir()) / "eth_backtest_gpu_test_cache"
         gpu_temp.mkdir(parents=True, exist_ok=True)
         os.environ["TEMP"] = str(gpu_temp)
         os.environ["TMP"] = str(gpu_temp)

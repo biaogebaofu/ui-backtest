@@ -20,7 +20,7 @@ class FingerprintLookupTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="fingerprint_lookup_")
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
 
     def write_json(self, path, value):
         path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")

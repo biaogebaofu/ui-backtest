@@ -23,7 +23,7 @@ class MissingFingerprintSourceUiTests(unittest.TestCase):
         self.source_presence.stop()  # Exercise the real directory checks in these tests.
         self.temp = tempfile.TemporaryDirectory(prefix='v157_sources_')
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
 
     def tearDown(self):
         queue.FingerprintQueueUiTests.tearDown(self)

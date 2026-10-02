@@ -21,7 +21,7 @@ class FingerprintBatchTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='v152_batch_')
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.fixture = fixture.FingerprintLookupTests()
         self.fixture.root = self.root
 
