@@ -1478,11 +1478,19 @@ class App(tk.Tk):
         ttk.Label(risk, text="S3基线周期").grid(row=2, column=2, sticky="w", pady=(7, 0))
         ttk.Combobox(risk, textvariable=self.s3_timeframe_var, width=8, state="readonly",
                      values=S3基线周期选项).grid(row=2, column=3, sticky="w", padx=(8, 0), pady=(7, 0))
-        ttk.Label(risk, text="本次入场规则").grid(row=3, column=0, sticky="w", pady=(7, 0))
-        self.entry_mode_summary = ttk.Label(risk, textvariable=self.entry_mode_var, width=56, font="TkTextFont")
-        self.entry_mode_summary.grid(row=3, column=1, columnspan=4, sticky="w", padx=(8, 0), pady=(7, 0))
-        self.entry_rules_jump_button = ttk.Button(risk, text="到组合页修改", command=self.show_entry_rules)
-        self.entry_rules_jump_button.grid(row=3, column=5, sticky="w", padx=8, pady=(7, 0))
+        entry_rule_row = ttk.Frame(risk)
+        entry_rule_row.grid(row=3, column=0, columnspan=6, sticky="w", pady=(7, 0))
+        entry_rule_label = ttk.Label(entry_rule_row, text="本次入场规则")
+        entry_rule_label.pack(side="left")
+        self.entry_mode_summary = ttk.Label(entry_rule_row, textvariable=self.entry_mode_var,
+                                            padding=(13, 0), wraplength=600, font="TkTextFont")
+        self.entry_mode_summary.pack(side="left")
+        self.entry_rules_jump_button = ttk.Button(entry_rule_row, text="到组合页修改", command=self.show_entry_rules)
+        self.entry_rules_jump_button.pack(side="left", padx=8)
+        # Keep this row inside the viewport even when other risk rows widen the grid.
+        self.run_scroll.canvas.bind("<Configure>", lambda event: self.entry_mode_summary.configure(
+            wraplength=max(1, event.width - entry_rule_label.winfo_reqwidth()
+                           - self.entry_rules_jump_button.winfo_reqwidth() - 66)), add="+")
         ttk.Label(risk, text="固定资金费假设（%/8小时）").grid(row=4, column=0, sticky="w", pady=(7, 0))
         ttk.Entry(risk, textvariable=self.funding_rate_var, width=10).grid(row=4, column=1, sticky="w", padx=(8, 24), pady=(7, 0))
         ttk.Label(risk, text="0不计；持仓跨UTC每8小时结算点，双向均按成本扣除", foreground="#7F6000").grid(

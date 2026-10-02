@@ -5,6 +5,7 @@ import csv
 import heapq
 import json
 import os
+import tempfile
 import time
 import uuid
 from pathlib import Path
@@ -123,9 +124,9 @@ def main():
         raise FileNotFoundError(f"找不到已有结果：{source}")
     run_context = original_run_context(source.parent)
 
-    # C盘空间很小时，Node/Excel导出也必须继承结果盘上的纯英文临时目录。
+    # 导出临时文件使用当前用户可写的系统临时目录。
     if not args.json_only:
-        runtime_temp = Path(output_dir.anchor) / "alpha_arena_export_cache" / "temp"
+        runtime_temp = Path(tempfile.gettempdir()) / "eth_backtest_export_cache" / "temp"
         runtime_temp.mkdir(parents=True, exist_ok=True)
         os.environ["TEMP"] = str(runtime_temp)
         os.environ["TMP"] = str(runtime_temp)
