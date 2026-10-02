@@ -12,6 +12,14 @@
 UI错误日志.txt
 *.csv
 *.parquet
+*.pq
+*.json
+!hedge_holidays.json
+!rank_color_scales.json
+!strategy_display.json
+*.txt
+!requirements*.txt
+*.flag
 *.npz
 *.npy
 *.xlsx
