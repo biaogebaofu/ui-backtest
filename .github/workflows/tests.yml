@@ -39,11 +39,32 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y python3-tk xvfb
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
+      - name: Diagnose macOS fingerprint GUI test
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          UI_BACKTEST_HOME: ${{ runner.temp }}/ui-backtest-test-home
+        run: |
+          python -u - <<'PY'
+          import faulthandler
+          import sys
+          import unittest
+          from test_support import prepare_test_features
+
+          faulthandler.dump_traceback_later(60, repeat=True)
+          try:
+              prepare_test_features()
+              suite = unittest.defaultTestLoader.discover("tests", pattern="test_v166_hedge_fingerprints.py")
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+          finally:
+              faulthandler.cancel_dump_traceback_later()
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
       - name: Run regression tests (Windows / macOS)
         if: runner.os != 'Linux'
         env:
           UI_BACKTEST_HOME: ${{ runner.temp }}/ui-backtest-test-home
-        run: python run_self_tests.py
+        run: python -u -c "import faulthandler, runpy; faulthandler.dump_traceback_later(180, repeat=True); runpy.run_path('run_self_tests.py', run_name='__main__')"
       - name: Run regression tests (Linux)
         if: runner.os == 'Linux'
         env:
