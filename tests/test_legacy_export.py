@@ -16,7 +16,7 @@ from backtest_worker import 中文表头, 全量CSV表头
 class LegacyExportTests(unittest.TestCase):
     def test_export_cache_without_temp_environment_stays_in_writable_temp_directory(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             output = root / "results"
             output.mkdir()
             with (output / "全部回测结果.csv").open("w", encoding="utf-8-sig", newline="") as handle:

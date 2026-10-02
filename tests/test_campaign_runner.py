@@ -177,14 +177,16 @@ class CampaignRunnerTests(unittest.TestCase):
         runner.resources = lambda root: dict(self.good(root), memory_bytes=500 * R.MIB) if started.exists() else self.good(root)
         thread = threading.Thread(target=runner.run)
         thread.start()
-        deadline = time.time() + 10
-        while time.time() < deadline:
-            state = R.read_json(self.root / "state.json")
-            if state["jobs"][0].get("checkpoint_confirmed"):
-                break
-            time.sleep(.02)
-        runner.request_stop()
-        thread.join(timeout=10)
+        try:
+            deadline = time.time() + 10
+            while time.time() < deadline:
+                state = R.read_json(self.root / "state.json")
+                if state["jobs"][0].get("checkpoint_confirmed"):
+                    break
+                time.sleep(.02)
+        finally:
+            runner.request_stop()
+            thread.join(timeout=10)
         self.assertFalse(thread.is_alive())
         self.assertTrue(state["jobs"][0].get("checkpoint_confirmed"))
         self.assertIn("内存", state["jobs"][0]["reason"])
@@ -357,6 +359,40 @@ class CampaignRunnerTests(unittest.TestCase):
         self.init()
         with self.assertRaisesRegex(ValueError, "新任务"):
             R.initialize(self.settings_path, self.root, self.source, self.plan)
+
+
+class CampaignReadJsonTests(unittest.TestCase):
+    def test_windows_transient_permission_error_retries_the_original_read(self):
+        path = Path("state.json")
+        conflict = PermissionError(13, "atomic replacement in progress")
+        self.assertIsNone(getattr(conflict, "winerror", None))
+        with patch.object(R.os, "name", "nt"), \
+                patch.object(Path, "read_text", side_effect=[conflict, '{"state":"queued"}']) as read, \
+                patch.object(R.time, "sleep") as sleep:
+            self.assertEqual(R.read_json(path), {"state": "queued"})
+        self.assertEqual(read.call_count, 2)
+        sleep.assert_called_once_with(.02)
+
+    def test_denial_is_bounded_and_other_read_errors_are_immediate(self):
+        path = Path("state.json")
+        denied = PermissionError(13, "access denied")
+        cases = (
+            ("windows denial", "nt", denied, PermissionError, 11),
+            ("other platform denial", "posix", denied, PermissionError, 1),
+            ("missing file", "nt", FileNotFoundError("missing"), FileNotFoundError, 1),
+            ("other IO error", "nt", OSError("IO failure"), OSError, 1),
+            ("invalid JSON", "nt", "{", json.JSONDecodeError, 1),
+        )
+        for label, platform, value, error, attempts in cases:
+            with self.subTest(label=label), patch.object(R.os, "name", platform), \
+                    patch.object(Path, "read_text", side_effect=value if isinstance(value, BaseException) else None,
+                                 return_value=value) as read, patch.object(R.time, "sleep") as sleep:
+                with self.assertRaises(error) as raised:
+                    R.read_json(path)
+                if isinstance(value, BaseException):
+                    self.assertIs(raised.exception, value)
+            self.assertEqual(read.call_count, attempts)
+            self.assertEqual(sleep.call_count, attempts - 1)
 
 
 if __name__ == "__main__":
