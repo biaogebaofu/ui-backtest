@@ -145,8 +145,10 @@ def selected_tasks(options):
 def _initialize_worker():
     # Also limit libraries imported after the worker starts. No nested 18x18 pool.
     for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
-                "NUMEXPR_NUM_THREADS", "NUMBA_NUM_THREADS"):
+                "NUMEXPR_NUM_THREADS", "NUMBA_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
         os.environ[key] = "1"
+    from gp_parallel import _limit_accelerate_threads
+    _limit_accelerate_threads()
     from threadpoolctl import threadpool_limits
     global _thread_limits
     _thread_limits = threadpool_limits(limits=1)

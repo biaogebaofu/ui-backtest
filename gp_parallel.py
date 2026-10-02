@@ -32,7 +32,7 @@ def single_threaded_children():
     # Spawn reimports the entry point before running a worker initializer.
     # Inherit these limits before NumPy/SciPy load their numerical DLLs.
     keys = ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
-            'NUMEXPR_NUM_THREADS', 'NUMBA_NUM_THREADS')
+            'NUMEXPR_NUM_THREADS', 'NUMBA_NUM_THREADS', 'VECLIB_MAXIMUM_THREADS')
     previous = {key: os.environ.get(key) for key in keys}
     try:
         os.environ.update(dict.fromkeys(keys, '1'))
@@ -43,6 +43,25 @@ def single_threaded_children():
                 os.environ.pop(key, None)
             else:
                 os.environ[key] = value
+
+
+def _limit_accelerate_threads():
+    if sys.platform != 'darwin':
+        return
+    import ctypes
+    import platform
+    accelerate = ctypes.CDLL('/System/Library/Frameworks/Accelerate.framework/Accelerate')
+    set_threading = getattr(accelerate, 'BLASSetThreading', None)
+    if set_threading is None:
+        # macOS before 15 uses the inherited VECLIB_MAXIMUM_THREADS limit.
+        version = platform.mac_ver()[0]
+        if not version or int(version.split('.')[0]) >= 15:
+            raise RuntimeError('Accelerate does not expose its BLAS threading API.')
+        return
+    set_threading.argtypes = [ctypes.c_uint]
+    set_threading.restype = ctypes.c_int
+    if set_threading(1) != 0:  # BLAS_THREADING_SINGLE_THREADED
+        raise RuntimeError('Accelerate rejected the single-threaded BLAS limit.')
 
 
 def _sha(path):
@@ -106,6 +125,7 @@ def _cached_job(directory, first, end):
 
 def _worker(source_dir, directory, tasks, results, timeframe, source_hash, pause_path):
     try:
+        _limit_accelerate_threads()
         sys.path.insert(0, source_dir)
         import fifth_learned_models as original
         import fifth_model_audit as audit

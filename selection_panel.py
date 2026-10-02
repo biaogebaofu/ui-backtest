@@ -294,6 +294,20 @@ class 组合选择面板(ttk.Frame):
             widget.grid(row=index // 2, column=index % 2, sticky="w", padx=(0, 22), pady=3)
             self.position_filter_widgets[code] = widget
 
+        position_columns = 2
+        def layout_positions(event):
+            nonlocal position_columns
+            widgets = list(self.position_filter_widgets.values())
+            required = sum(max(widget.winfo_reqwidth() for widget in widgets[column::2])
+                           for column in range(2)) + 44
+            columns = 2 if required <= event.width else 1
+            if columns == position_columns:
+                return
+            position_columns = columns
+            for index, widget in enumerate(widgets):
+                widget.grid_configure(row=index // columns, column=index % columns)
+        position_rows.bind("<Configure>", layout_positions)
+
         conditions = ttk.LabelFrame(body, text="五个周期的开仓条件（每个周期至少保留一项）", padding=10)
         conditions.pack(fill="x")
         self.case_vars = {}
