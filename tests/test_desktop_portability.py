@@ -1,5 +1,6 @@
 """Desktop paths, small displays, wheel events and macOS resource checks."""
 from contextlib import ExitStack
+import io
 import os
 from pathlib import Path
 import subprocess
@@ -9,6 +10,7 @@ import unittest
 from unittest import mock
 
 import platform_support as desktop
+import run_self_tests as runner
 
 
 class DesktopHelpersTests(unittest.TestCase):
@@ -114,6 +116,58 @@ class DesktopHelpersTests(unittest.TestCase):
                 mock.patch.object(precompute, "macos_available_memory", side_effect=RuntimeError("probe failed")):
             with self.assertRaisesRegex(RuntimeError, "probe failed"):
                 precompute.worker_limit(18, 100, 1505)
+
+
+class DesktopSelfTestRunnerTests(unittest.TestCase):
+    def suite(self, events, *, main_fails=False):
+        class MainCase(unittest.TestCase):
+            def runTest(self):
+                events.append('main')
+                self.assertFalse(main_fails)
+
+        class IsolatedCase(unittest.TestCase):
+            def runTest(self):
+                events.append('isolated-in-parent')
+
+        IsolatedCase.__module__ = runner.ISOLATED_MACOS_MODULE
+        return unittest.TestSuite([unittest.TestSuite([MainCase()]),
+                                   unittest.TestSuite([IsolatedCase(), IsolatedCase()])])
+
+    def test_windows_keeps_all_original_tests_and_never_spawns(self):
+        events = []
+        with mock.patch.object(runner, 'sys', SimpleNamespace(platform='win32')), \
+                mock.patch.object(runner.subprocess, 'run') as child, \
+                mock.patch('sys.stderr', io.StringIO()):
+            code = runner.run_tests(self.suite(events), Path.cwd())
+        self.assertEqual(code, 0)
+        self.assertEqual(events, ['main', 'isolated-in-parent', 'isolated-in-parent'])
+        child.assert_not_called()
+
+    def test_macos_transfers_whole_module_and_reports_total(self):
+        events = []
+        output = io.StringIO()
+        with mock.patch.object(runner, 'sys', SimpleNamespace(platform='darwin', executable='python-test')), \
+                mock.patch.object(runner.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as child, \
+                mock.patch('sys.stderr', io.StringIO()), mock.patch('sys.stdout', output):
+            code = runner.run_tests(self.suite(events), Path.cwd())
+        self.assertEqual(code, 0)
+        self.assertEqual(events, ['main'])
+        self.assertIn('3 selected tests; 1 in the main process, 2 isolated', output.getvalue())
+        command = child.call_args.args[0]
+        self.assertEqual(command[:5], ['python-test', '-u', '-m', 'unittest', 'discover'])
+        self.assertIn(runner.ISOLATED_MACOS_MODULE + '.py', command)
+        self.assertNotIn('env', child.call_args.kwargs)  # Inherit prepared fixture paths.
+
+    def test_either_process_failure_is_preserved_and_main_still_runs(self):
+        for child_code, main_fails in ((1, False), (0, True), (1, True)):
+            with self.subTest(child_code=child_code, main_fails=main_fails):
+                events = []
+                with mock.patch.object(runner, 'sys', SimpleNamespace(platform='darwin', executable='python-test')), \
+                        mock.patch.object(runner.subprocess, 'run', return_value=SimpleNamespace(returncode=child_code)), \
+                        mock.patch('sys.stderr', io.StringIO()), mock.patch('sys.stdout', io.StringIO()):
+                    code = runner.run_tests(self.suite(events, main_fails=main_fails), Path.cwd())
+                self.assertEqual(code, 1)
+                self.assertEqual(events, ['main'])
 
 
 def has_display():
