@@ -92,7 +92,8 @@ class ScanEtaUiTests(unittest.TestCase):
     def fake_app(self):
         return SimpleNamespace(messages=queue.Queue(), progress={'value': 0},
                                status_var=mock.Mock(), append_log=mock.Mock(),
-                               after=mock.Mock(), poll_messages=mock.Mock(), fingerprint_queue=[])
+                               after=mock.Mock(), after_cancel=mock.Mock(),
+                               poll_messages=mock.Mock(), fingerprint_queue=[])
 
     def event(self, **updates):
         event = {'type': 'inner_progress', 'tp': 1, 'total_tp': 1,

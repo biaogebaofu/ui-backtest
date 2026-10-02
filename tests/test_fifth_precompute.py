@@ -234,5 +234,43 @@ class FifthPrecomputeTests(unittest.TestCase):
             self.assertEqual(precompute.worker_limit(18, 50, 900000, 0), 1)
 
 
+class FifthPrecomputeDispatchTests(unittest.TestCase):
+    def test_immediately_ready_tasks_report_dispatch_before_consuming_results(self):
+        events = []
+        data = {"1m_close": np.zeros(3)}
+        tasks = [("1m", 285), ("1m", 288)]
+
+        def ready():
+            self.assertTrue(any(event["completed"] == 0 and len(event["running"]) == 2
+                                for event in events))
+            return True
+
+        def apply(_function, args):
+            np.save(Path(args[1]) / "signals.npy", np.zeros((2, 3), dtype=bool))
+            result = mock.Mock()
+            result.ready.side_effect = ready
+            result.get.return_value = None
+            return result
+
+        pool = mock.Mock()
+        pool.apply_async.side_effect = apply
+        context = mock.Mock()
+        context.Pool.return_value = pool
+        with tempfile.TemporaryDirectory(prefix="precompute-dispatch-test-") as directory, \
+                mock.patch.object(precompute.mp, "get_context", return_value=context), \
+                mock.patch.object(precompute, "worker_limit", return_value=2), \
+                mock.patch.object(precompute.time, "monotonic", return_value=10.), \
+                mock.patch.object(precompute.time, "sleep", side_effect=AssertionError("Immediate results must not wait")):
+            precompute.prepare_fifth_signals(data, tasks, Path(directory), {"test": "immediate"},
+                                            2, events.append)
+        self.assertEqual([(event["completed"], len(event["running"]), event["state"])
+                          for event in events],
+                         [(0, 0, "running"), (0, 1, "running"), (0, 2, "running"),
+                          (1, 1, "running"), (2, 0, "running"), (2, 0, "done")])
+        self.assertEqual(pool.apply_async.call_count, 2)
+        pool.close.assert_called_once()
+        pool.join.assert_called_once()
+
+
 if __name__ == "__main__":
     unittest.main()

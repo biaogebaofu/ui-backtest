@@ -128,6 +128,31 @@ def has_display():
 
 
 @unittest.skipUnless(has_display(), "需要 tkinter 和可用显示")
+class DesktopTimerLifecycleTests(unittest.TestCase):
+    def test_manual_poll_keeps_one_timer_and_destroy_cancels_it(self):
+        from ui import App
+        from hedge_panel import HedgePanel
+        with mock.patch.object(App, "load_user_settings"), \
+                mock.patch.object(App, "detect_gpu"), \
+                mock.patch.object(HedgePanel, "load_settings"):
+            app = App()
+            app.withdraw()
+            destroyed = False
+            try:
+                for _ in range(3):
+                    app.poll_messages()
+                    pending = app.tk.splitlist(app.tk.call("after", "info"))
+                    self.assertEqual(len(pending), 1)
+                    self.assertEqual(pending[0], app._poll_after_id)
+                app.destroy()
+                destroyed = True
+                self.assertEqual(app.tk.splitlist(app.tk.call("after", "info")), ())
+            finally:
+                if not destroyed:
+                    app.destroy()
+
+
+@unittest.skipUnless(has_display(), "需要 tkinter 和可用显示")
 class DesktopUiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

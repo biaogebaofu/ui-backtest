@@ -11,7 +11,7 @@ class PrecomputeUiTests(unittest.TestCase):
     def app(self):
         return SimpleNamespace(messages=queue.Queue(), progress={"value": 16},
                                status_var=mock.Mock(), append_log=mock.Mock(),
-                               after=mock.Mock(return_value="scheduled"),
+                               after=mock.Mock(return_value="scheduled"), after_cancel=mock.Mock(),
                                fingerprint_queue=[], poll_messages=mock.Mock())
 
     def event(self, **changes):
