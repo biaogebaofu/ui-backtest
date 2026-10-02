@@ -50,6 +50,10 @@ class FifthParallelWorkerTests(unittest.TestCase):
             script = """import sys
 import fifth_precompute
 import backtest_worker as worker
+# Exercise two real processes regardless of host memory pressure. Resource
+# downscaling is covered separately by the worker-budget tests.
+fifth_precompute.available_memory = lambda: 8 * 1024**3
+fifth_precompute.os.cpu_count = lambda: 2
 serial = sys.argv.pop(1) == 'serial'
 if serial:
     fifth_precompute.prepare_fifth_signals = lambda *a, **k: None
