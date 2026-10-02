@@ -1,0 +1,32 @@
+[
+  {
+    "metric": "期末资金",
+    "headers": ["期末资金（USDC）", "期末资金", "目标杠杆期末资金（USDC）"],
+    "colors": ["#F8696B", "#FFEB84", "#63BE7B"],
+    "thresholds": [{"type": "min"}, {"type": "percentile", "value": 50}, {"type": "max"}]
+  },
+  {
+    "metric": "平均日完整交易数",
+    "headers": ["平均日完整交易数（次/日）", "平均日完整交易数（单/日）", "平均日完整交易数", "日均完整交易（次/日）", "日均完整交易"],
+    "colors": ["#EAF3FB", "#BDD7EE", "#7FAFDB"],
+    "thresholds": [{"type": "min"}, {"type": "percentile", "value": 50}, {"type": "max"}]
+  },
+  {
+    "metric": "胜率",
+    "headers": ["胜率（%）", "胜率"],
+    "colors": ["#F8696B", "#FFEB84", "#63BE7B"],
+    "thresholds": [{"type": "min"}, {"type": "percentile", "value": 50}, {"type": "max"}]
+  },
+  {
+    "metric": "名义倍数",
+    "headers": ["名义倍数（倍）", "名义倍数", "统一目标杠杆（倍）"],
+    "colors": ["#F2EDF8", "#D9CCE8", "#B4A0D0"],
+    "thresholds": [{"type": "min"}, {"type": "percentile", "value": 50}, {"type": "max"}]
+  },
+  {
+    "metric": "最大回撤",
+    "headers": ["最大回撤（%）", "最大回撤", "目标杠杆最大回撤（%）"],
+    "colors": ["#63BE7B", "#FFEB84", "#F8696B"],
+    "thresholds": [{"type": "min"}, {"type": "percentile", "value": 50}, {"type": "max"}]
+  }
+]

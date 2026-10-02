@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "timezone": "Asia/Shanghai",
+  "utc_offset_hours": 8,
+  "range_end_inclusive": true,
+  "years": {
+    "2025": [
+      {
+        "name": "元旦",
+        "start": "2025-01-01",
+        "end": "2025-01-01"
+      },
+      {
+        "name": "春节",
+        "start": "2025-01-28",
+        "end": "2025-02-04"
+      },
+      {
+        "name": "清明节",
+        "start": "2025-04-04",
+        "end": "2025-04-06"
+      },
+      {
+        "name": "劳动节",
+        "start": "2025-05-01",
+        "end": "2025-05-05"
+      },
+      {
+        "name": "端午节",
+        "start": "2025-05-31",
+        "end": "2025-06-02"
+      },
+      {
+        "name": "国庆节、中秋节",
+        "start": "2025-10-01",
+        "end": "2025-10-08"
+      }
+    ],
+    "2026": [
+      {
+        "name": "元旦",
+        "start": "2026-01-01",
+        "end": "2026-01-03"
+      },
+      {
+        "name": "春节",
+        "start": "2026-02-15",
+        "end": "2026-02-23"
+      },
+      {
+        "name": "清明节",
+        "start": "2026-04-04",
+        "end": "2026-04-06"
+      },
+      {
+        "name": "劳动节",
+        "start": "2026-05-01",
+        "end": "2026-05-05"
+      },
+      {
+        "name": "端午节",
+        "start": "2026-06-19",
+        "end": "2026-06-21"
+      },
+      {
+        "name": "中秋节",
+        "start": "2026-09-25",
+        "end": "2026-09-27"
+      },
+      {
+        "name": "国庆节",
+        "start": "2026-10-01",
+        "end": "2026-10-07"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "year": 2025,
+      "issuer": "国务院办公厅",
+      "document_number": "国办发明电〔2024〕12号",
+      "publication_date": "2024-11-12",
+      "title": "国务院办公厅关于2025年部分节假日安排的通知",
+      "url": "https://www.gov.cn/zhengce/zhengceku/202411/content_6986383.htm",
+      "verified_via": "https://big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/zhengceku/202411/content_6986383.htm",
+      "verification_method": "中国政府网搜索索引全文；直接打开繁体页重定向循环",
+      "corroborating_government_url": "https://www.xinyuan.gov.cn/xinyuan/c113926/202411/39f32dce0dc543e299ed642eaae79faf.shtml"
+    },
+    {
+      "year": 2026,
+      "issuer": "国务院办公厅",
+      "document_number": "国办发明电〔2025〕7号",
+      "publication_date": "2025-11-04",
+      "title": "国务院办公厅关于2026年部分节假日安排的通知",
+      "url": "https://www.gov.cn/zhengce/content/202511/content_7047090.htm",
+      "verified_via": "https://big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/content/202511/content_7047090.htm",
+      "verification_method": "中国政府网搜索索引全文，并与甘肃政务服务网国务院办公厅原文转载核对",
+      "corroborating_government_url": "https://zwfw.gansu.gov.cn/huixian/zczx/tzgg/art/2025/art_715c16a75e4d4c289c295e77772c7274.html"
+    }
+  ],
+  "weekend_override": true,
+  "weekend_override_rule": "北京时间周六、周日始终适用0.2%，国务院安排为调休上班的周末也不改为0.4%；周一至周五落在上述官方放假调休区间内适用0.2%，其余日期适用0.4%。",
+  "holiday_tp_rate": 0.002,
+  "other_weekday_tp_rate": 0.004,
+  "official_makeup_workdays_ignored": {
+    "2025": [
+      "2025-01-26",
+      "2025-02-08",
+      "2025-04-27",
+      "2025-09-28",
+      "2025-10-11"
+    ],
+    "2026": [
+      "2026-01-04",
+      "2026-02-14",
+      "2026-02-28",
+      "2026-05-09",
+      "2026-09-20",
+      "2026-10-10"
+    ]
+  },
+  "verified": true,
+  "verified_on": "2026-09-14",
+  "interpretation": "按国务院公布的全国统一放假调休区间，而非仅《全国年节及纪念日放假办法》中的13个法定节假日本日；包括区间内调休日。不含仅部分公民或地方性节日。",
+  "scope_note": "保留2025、2026全年日期，回测可按行情实际日期裁剪。"
+}

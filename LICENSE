@@ -1,0 +1,31 @@
+Copyright (c) 2026 biaogebaofu. All rights reserved.
+版权所有 (c) 2026 biaogebaofu。保留所有权利。
+
+公开查看条款
+
+本仓库中的原创代码和文档公开供查看，不以 MIT 或其他开源许可证授权。
+除 GitHub 服务条款赋予的平台权限、适用法律允许的权利及版权所有者另行
+书面授予的权限外，不授予运行、复制、修改、再分发或商业使用的许可。
+
+这些条款不限制 GitHub 服务条款允许的服务内查看、fork 及相关平台操作。
+GitHub 服务条款：https://docs.github.com/en/site-policy/github-terms/github-terms-of-service
+
+第三方依赖及第三方材料遵循各自许可证；本声明不改变其许可条件。
+本项目按现状提供，不承诺适用于特定用途，也不保证回测结果或未来收益。
+
+Public-viewing terms
+
+Original code and documentation in this repository are public for viewing and
+are not licensed under MIT or another open-source license. No permission to
+execute, copy, modify, redistribute, or commercially use them is granted beyond
+rights provided by the GitHub Terms of Service, applicable law, or a separate
+written authorization from the copyright owner.
+
+These terms do not restrict viewing, forking, and related platform operations
+within the GitHub service as permitted by its Terms of Service:
+https://docs.github.com/en/site-policy/github-terms/github-terms-of-service
+
+Third-party dependencies and materials retain their respective licenses; this
+notice does not change those terms. The project is provided as is, without
+promises of suitability for a particular purpose, backtest accuracy, or future
+profit.
