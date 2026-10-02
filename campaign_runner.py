@@ -109,7 +109,14 @@ def task_path(root: Path, *parts: str) -> Path:
 
 
 def read_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    # Windows atomic replacement can briefly deny the reader with errno 13.
+    for attempt in range(11):
+        try:
+            return json.loads(path.read_text(encoding="utf-8-sig"))
+        except PermissionError:
+            if os.name != "nt" or attempt == 10:
+                raise
+            time.sleep(.02)
 
 
 def directory_bytes(root: Path) -> int:
