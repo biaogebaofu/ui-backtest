@@ -256,7 +256,9 @@ class ExactListUiTests(unittest.TestCase):
         shared = [next(widget for widget in walk(app.run_tab)
                        if "textvariable" in widget.keys() and str(widget.cget("textvariable")) == str(var))
                   for var in (app.thread_var, app.out_var)]
-        app.attributes("-alpha", 0); app.attributes("-toolwindow", True)
+        app.attributes("-alpha", 0)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         try:
             app.geometry("1080x720+30000+30000"); app.deiconify()
             for folded in (False, True):
@@ -339,7 +341,9 @@ class ExactListUiTests(unittest.TestCase):
     def test_main_list_and_both_leverages_are_accessible_at_1080_and_1280(self):
         app = self.app
         self.add([queue.match(leverage=9.0), queue.match("b", "second", "MACD_CYCLE", 10.0)])
-        app.attributes("-alpha", 0); app.attributes("-toolwindow", True)
+        app.attributes("-alpha", 0)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         try:
             for width, height in ((1080, 720), (1280, 850)):
                 app.geometry(f"{width}x{height}+30000+30000"); app.deiconify()

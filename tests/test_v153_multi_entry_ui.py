@@ -128,7 +128,8 @@ class MultiEntryPanelTests(unittest.TestCase):
     def test_multimode_checks_are_reachable_at_minimum_and_default_width(self):
         panel, root = self.panel, self.root
         root.attributes("-alpha", 0)
-        root.attributes("-toolwindow", True)
+        if root.tk.call("tk", "windowingsystem") == "win32":
+            root.attributes("-toolwindow", True)
         try:
             panel.set_entry_modes(list(入场触发口径选项))
             for width, height in ((1080, 720), (1280, 850)):

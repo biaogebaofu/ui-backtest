@@ -337,9 +337,13 @@ class FingerprintQueueUiTests(unittest.TestCase):
         app = self.app
         self.add([match(source="长目录" * 50)])
         dialog = app._fingerprint_queue_dialog
-        app.attributes("-alpha", 0); app.attributes("-toolwindow", True)
+        app.attributes("-alpha", 0)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         app.geometry("1080x720+30000+30000"); app.deiconify()
-        dialog.attributes("-alpha", 0); dialog.attributes("-toolwindow", True)
+        dialog.attributes("-alpha", 0)
+        if dialog.tk.call("tk", "windowingsystem") == "win32":
+            dialog.attributes("-toolwindow", True)
         try:
             for width, height in ((850, 500), (1000, 570)):
                 dialog.geometry(f"{width}x{height}+30000+30000"); dialog.deiconify(); app.update()

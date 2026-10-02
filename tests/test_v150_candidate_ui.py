@@ -206,7 +206,8 @@ class CandidateSchemeUiTests(unittest.TestCase):
                 yield child
                 yield from walk(child)
         app.attributes("-alpha", 0)
-        app.attributes("-toolwindow", True)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         try:
             for width, height in ((1080, 720), (1280, 850)):
                 app.geometry(f"{width}x{height}+30000+30000")

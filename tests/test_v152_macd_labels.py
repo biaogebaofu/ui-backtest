@@ -74,7 +74,8 @@ class MacdLabelPanelTests(unittest.TestCase):
     def test_new_label_fits_minimum_and_default_content_width(self):
         root, panel = self.root, self.panel
         root.attributes("-alpha", 0)
-        root.attributes("-toolwindow", True)
+        if root.tk.call("tk", "windowingsystem") == "win32":
+            root.attributes("-toolwindow", True)
         try:
             for width in (1080, 1280):
                 root.geometry(f"{width}x720+30000+30000")

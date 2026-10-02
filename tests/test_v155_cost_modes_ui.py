@@ -240,7 +240,9 @@ class CostModesUiTests(unittest.TestCase):
     def test_cost_checkboxes_fit_minimum_width_and_both_are_accessible(self):
         app = self.app
         app.set_cost_modes(["SLIPPAGE", "FEE"])
-        app.attributes("-alpha", 0); app.attributes("-toolwindow", True)
+        app.attributes("-alpha", 0)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         try:
             for width, height in ((1080, 720), (1280, 850)):
                 app.geometry(f"{width}x{height}+30000+30000"); app.deiconify()

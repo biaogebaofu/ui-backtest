@@ -382,11 +382,11 @@ class ScrollViewportTests(unittest.TestCase):
         app=self.app;app.notebook.select(3);app.update()
         app.candidate_scroll.canvas.yview_moveto(1.);app.update()
         btn=next(w for w in walk(app.candidate_scroll) if isinstance(w,ttk.Button) and w.cget('text')=='选择已有结果目录并生成候选')
-        self.assertLess(btn.winfo_rooty()+btn.winfo_height(),720)
+        self.assertLess(btn.winfo_rooty()+btn.winfo_height(),app.winfo_rooty()+app.winfo_height())
         app.notebook.select(2)
         for var in app.fold_vars.values():var.set(False)
         app._apply_folds();app.update()
-        self.assertLess(app.start_btn.winfo_rooty()+app.start_btn.winfo_height(),720)
+        self.assertLess(app.start_btn.winfo_rooty()+app.start_btn.winfo_height(),app.winfo_rooty()+app.winfo_height())
         self.assertGreater(app.run_scroll.canvas.bbox('all')[3],app.run_scroll.canvas.winfo_height())
     def test_matrix_single_editor_apply_and_cancel_are_visible(self):
         from tkinter import ttk,Toplevel

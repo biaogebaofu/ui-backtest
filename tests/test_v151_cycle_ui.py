@@ -162,7 +162,8 @@ class CycleModeUiTests(unittest.TestCase):
     def test_three_modes_and_sixteen_positions_are_reachable_at_minimum_width(self):
         app, panel = self.app, self.app.selection_panel
         app.attributes("-alpha", 0)
-        app.attributes("-toolwindow", True)
+        if app.tk.call("tk", "windowingsystem") == "win32":
+            app.attributes("-toolwindow", True)
         try:
             for width, height in ((1080, 720), (1280, 850)):
                 app.geometry(f"{width}x{height}+30000+30000")
